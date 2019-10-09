@@ -49,7 +49,6 @@ const getPage = async (db, links, index) => {
 		$(el).find('.ocultar #fila_cuotas').each((e, l) => {
 			$(l).find('#celda_cuotas:not(.combi_cesta):not(:contains("-"))').each((a, b) => {
 				int++;
-				back_odds = $(b).text(); // BACK_ODDS 7TH
 				odds_list.push([
 					links[index].type,
 					$('.equipo_left').text() + ' vs ' + $('.equipo_right').text(),
