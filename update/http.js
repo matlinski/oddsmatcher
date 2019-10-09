@@ -5,13 +5,16 @@ const cheerio = require('cheerio');
 
 const getPages = async (url, sport, links) => {
 	const response = await axios.get(url, sport);
-	if (response.status === 200) {
-		const html = response.data;
-		const $ = cheerio.load(html);
-		$('.flecha_izquierda').each((i, el) => {
-			links.push({ url: 'http://www.elcomparador.com' + $(el).attr('href'), type: sport });
-		});
+	if (response.status !== 200) {
+		return;
 	}
+	const html = response.data;
+	const $ = cheerio.load(html);
+	$('.flecha_izquierda').each((i, el) =>
+		links.push({
+			url: 'http://www.elcomparador.com' + $(el).attr('href'),
+			type: sport
+		}));
 };
 
 const getPage = async (db, links, index) => {
