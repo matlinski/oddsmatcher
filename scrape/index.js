@@ -1,5 +1,14 @@
 'use strict';
 
+const sports = require('./sports');
 const getEvents = require('./getEvents');
+const getOdds = require('./getOdds');
 
-getEvents().then(console.log);
+(async () => {
+
+	const events = await getEvents(sports.football);
+
+	const odds = await getOdds(events[0]);
+
+	console.log(odds);
+})();
