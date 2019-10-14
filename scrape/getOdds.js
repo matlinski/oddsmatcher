@@ -9,3 +9,5 @@ const getOdds = async url => {
 
 	return '?';
 };
+
+module.exports = getOdds;
