@@ -39,7 +39,14 @@ const getOdds = async url => {
 						market: markets[i],
 						selection: selections[e],
 						bookie: bookies[f],
-						odds: back_odds.eq(f).text()
+						odds: Number(back_odds.eq(f).text()),
+						category: $('#separador_interna').attr('class'),
+						team1: $('#contenedor_interna_cabecerapartido')
+							.find('.equipo_left').text(),
+						team2: $('#contenedor_interna_cabecerapartido')
+							.find('.equipo_right').text(),
+						time: $('#contenedor_interna_cabecerapartido')
+							.find('.hora').text()
 					});
 				}
 			}
