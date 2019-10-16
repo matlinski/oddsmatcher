@@ -3,7 +3,12 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 
-const getOdds = async url => {
+const parseDate = str => {
+	const [ date, time ] = str.split('-').map(el => el.trim());
+	return new Date(date.split('/').reverse().join('-') + ' ' + time);
+};
+
+async function* getOdds(url) {
 	const { data } = await axios(url);
 	const $ = cheerio.load(data);
 
@@ -35,7 +40,7 @@ const getOdds = async url => {
 				// :not(:contains("-"))
 			for (let f = 0; f < back_odds.length; f++) {
 				if (!back_odds.eq(f).text().includes('-')) {
-					result.push({
+					yield {
 						market: markets[i],
 						selection: selections[e],
 						bookie: bookies[f],
@@ -45,9 +50,9 @@ const getOdds = async url => {
 							.find('.equipo_left').text(),
 						team2: $('#contenedor_interna_cabecerapartido')
 							.find('.equipo_right').text(),
-						time: $('#contenedor_interna_cabecerapartido')
-							.find('.hora').text()
-					});
+						time: parseDate($('#contenedor_interna_cabecerapartido')
+							.find('.hora').text())
+					};
 				}
 			}
 		}

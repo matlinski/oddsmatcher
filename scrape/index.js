@@ -7,8 +7,9 @@ const getOdds = require('./getOdds');
 (async () => {
 
 	const events = await getEvents(sports.football);
-	console.log(events[0]);
-	const odds = await getOdds(events[0]);
 
-	console.log(JSON.stringify(odds, null, '  '));
+	for await (const odd of getOdds(events[0])) {
+		console.log(odd);
+	}
+
 })();
