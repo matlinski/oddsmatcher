@@ -2,14 +2,15 @@
 const sports = require('./sports');
 const getEvents = require('./getEvents');
 const getOdds = require('./getOdds');
-const insertOdds = require('../db/insertOdds');
+const {insertOdds, db} = require('../db/index');
 
 (async () => {
 
 	const events = await getEvents(sports.football);
-
-	for await (const odd of getOdds(events[0])) {
-		console.log(await insertOdds(odd));
+	for (const event of events) {
+		for await (const odd of getOdds(event)) {
+			console.log(await insertOdds(odd));
+		}
 	}
-
+	db.end();
 })();
