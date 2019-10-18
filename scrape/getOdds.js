@@ -41,17 +41,17 @@ async function* getOdds(url) {
 			for (let f = 0; f < back_odds.length; f++) {
 				if (!back_odds.eq(f).text().includes('-')) {
 					yield {
+						category: $('#separador_interna').attr('class'),
+						home: $('#contenedor_interna_cabecerapartido')
+							.find('.equipo_left').text(),
+						away: $('#contenedor_interna_cabecerapartido')
+							.find('.equipo_right').text(),
+						time: parseDate($('#contenedor_interna_cabecerapartido')
+							.find('.hora').text()),
 						market: markets[i],
 						selection: selections[e],
 						bookie: bookies[f],
-						odds: Number(back_odds.eq(f).text()),
-						category: $('#separador_interna').attr('class'),
-						team1: $('#contenedor_interna_cabecerapartido')
-							.find('.equipo_left').text(),
-						team2: $('#contenedor_interna_cabecerapartido')
-							.find('.equipo_right').text(),
-						time: parseDate($('#contenedor_interna_cabecerapartido')
-							.find('.hora').text())
+						back_odds: Number(back_odds.eq(f).text())
 					};
 				}
 			}
