@@ -2,23 +2,15 @@ const {
 	isMainThread, parentPort
 } = require('worker_threads');
 
-if (isMainThread) {
-	return;
-}
-
 const { promisify } = require('util');
-const axios = require('axios');
 const cheerio = require('cheerio');
-
-const sleep = promisify(setTimeout);
 
 const parseDate = str => {
 	const [ date, time ] = str.split('-').map(el => el.trim());
 	return new Date(date.split('/').reverse().join('-') + ' ' + time);
 };
 
-const process = async url => {
-	const { data } = await axios(url);
+const process = data => {
 	const $ = cheerio.load(data);
 
 	const bookies = $('#contenedor_logos a')
@@ -66,15 +58,12 @@ const process = async url => {
 	}
 };
 
-(async function main() {
-	const queue = [];
-	parentPort.on('message', url => queue.push(url));
-	while (true) {
-		if (queue.length > 0) {
-			await process(queue.shift());
-			parentPort.postMessage('done');
-		} else {
-			await sleep(100);
-		}
-	}
-})();
+if (!isMainThread) {
+	parentPort.on('message', ([ url, data ]) => {
+		parentPort.postMessage('start ' + url);
+		process(data);
+		parentPort.postMessage('done ' + url);
+	});
+}
+
+module.exports = process;

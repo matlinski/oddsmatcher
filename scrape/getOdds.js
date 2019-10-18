@@ -1,38 +1,46 @@
 'use strict';
 
-const {
-	Worker, isMainThread
-} = require('worker_threads');
+const { Worker } = require('worker_threads');
 
-if (!isMainThread) {
-	return;
-}
+const { PassThrough } = require('stream');
 
+const { promisify } = require('util');
 const { join } = require('path');
 
-const workers = [
-	new Worker(join(__dirname, 'getOdds_worker.js')),
-	new Worker(join(__dirname, 'getOdds_worker.js')),
-	new Worker(join(__dirname, 'getOdds_worker.js')),
-	new Worker(join(__dirname, 'getOdds_worker.js'))
-]
+const axios = require('axios');
 
-workers.forEach(worker => worker.unref());
+const workers = Array(4).fill(null).map(() =>
+	new Worker(join(__dirname, 'getOdds_worker.js')));
 
 let n = 0;
 
-async function* getOdds(url) {
+const getOdds = url => {
 	const worker = workers[n % workers.length];
+	const s = new PassThrough({ objectMode: true });
 	n = (n + 1) % workers.length;
-	worker.postMessage(url);
-	while (true) {
-		const val = await new Promise(resolve =>
-			worker.once('message', resolve));
-		if (val === 'done') {
+
+	const run = row => {
+		if (typeof row === 'string') {
+			if (row !== 'done ' + url) {
+				console.warn('unknown finish message: ' + row);
+			}
+			worker.removeListener('message', run);
 			return;
 		}
-		yield val;
-	}
+		s.write(row);
+	};
+
+	const start = msg => {
+		if (typeof msg === 'string' && msg === 'start ' + url) {
+			worker.removeListener('message', start);
+			worker.on('message', run);
+		}
+	};
+	worker.on('message', start);
+	axios(url)
+		.then(res =>
+			worker.postMessage([ url, res.data ]));
+	return s;
 }
 
 module.exports = getOdds;
