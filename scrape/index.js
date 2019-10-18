@@ -9,7 +9,7 @@ const insertOdds = require('../db/insertOdds');
 	const events = await getEvents(sports.football);
 
 	for await (const odd of getOdds(events[0])) {
-		await insertOdds(odd);
+		console.log(await insertOdds(odd));
 	}
 
 })();

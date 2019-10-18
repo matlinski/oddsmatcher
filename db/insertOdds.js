@@ -1,17 +1,6 @@
 'use strict';
-const mysql = require('mysql');
-const db = mysql.createConnection({
-    host: "localhost",
-    user: "mat",
-    password: "tam",
-    database: 'oddsmatcher'
-});
-db.connect((err)=> {
-    if(err){
-        throw err;
-    }
-    console.log('Mysql Connected')
-});
+
+const db = require('./conn');
 
 const insertOdds = ({category, home, away, time, market, selection, bookie, back_odds}) => 
     new Promise((resolve, reject) => {
@@ -20,8 +9,7 @@ const insertOdds = ({category, home, away, time, market, selection, bookie, back
             if(err){
                 reject(err);
             }
-            console.log(result);
-            resolve()
+            resolve(result)
         })
     });
 
