@@ -9,7 +9,6 @@ if (!isMainThread) {
 }
 
 const { join } = require('path');
-const axios = require('axios');
 
 const workers = [
 	new Worker(join(__dirname, 'getOdds_worker.js')),
